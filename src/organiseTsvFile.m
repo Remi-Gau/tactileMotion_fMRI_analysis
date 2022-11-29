@@ -1,73 +1,68 @@
 function organiseTsvFile
-% it is a mini function to reorganise the _events.tsv files 
-% in order to make them bids-compliant.
+    % it is a mini function to reorganise the _events.tsv files
+    % in order to make them bids-compliant.
 
-% first, it omits the empty column
-% then looks at empty cells and inserts 
+    % first, it omits the empty column
+    % then looks at empty cells and inserts
 
-  deleteSuffix = 1;
-  
+    deleteSuffix = 1;
 
- % add bids repo
-  bidsPath = '/Users/shahzad/Documents/MATLAB/GitHubcodes/CPP_BIDS';
-  addpath(genpath(fullfile(bidsPath,'src')));
-  addpath(genpath(fullfile(bidsPath,'lib')));
-  
-  % raw data path
-  rawDir = '/Users/shahzad/Documents/MATLAB/MotionLocalizer_newtsv_TL1/raw';
-  
-  % define task names
-  subject = 'sub-001';
-  session = 'ses-001';
-  
-  
-  % define the task names
-  taskNames = {'TactileLocalizer'};%,'tactileLocalizer2', 'visualLocalizer'};
-  
-  % tsv file location
-  rawFuncDir = fullfile(rawDir, subject, session, 'func');
-  
-  
-  % remove the suffix
-  if deleteSuffix
-    removeAllDateSuffix(rawDir, subject, session);
-  end
-  
-  % Create output file name
-  outputTag = '_touched.tsv';
-    
-  
-  for iTask = 1:length(taskNames)
-      
-      % create a pattern to look for in the folder
-      FilePattern = ['*', taskNames{iTask}, '*_events.tsv'];
-      % find all the .tsv files
-      tsvFiles = dir(fullfile(rawFuncDir, FilePattern));
-      
-      % read, modify and save tsv  in a for loop
-      for iFile = 1:length(tsvFiles)
-          
-          tsvFileName = tsvFiles(iFile).name;
-          tsvFileFolder = tsvFiles(iFile).folder;
-          
-          % create output file name
-          outputFileName = strrep(tsvFileName, '.tsv', outputTag);
+    % add bids repo
+    bidsPath = '/Users/shahzad/Documents/MATLAB/GitHubcodes/CPP_BIDS';
+    addpath(genpath(fullfile(bidsPath, 'src')));
+    addpath(genpath(fullfile(bidsPath, 'lib')));
 
-          % read the tsv file
-          output = bids.util.tsvread(fullfile(tsvFileFolder,tsvFileName));
-%           
-          % convert to tsv structure
-          output = convertStruct(output);
-          
-          % save as tsv
-          bids.util.tsvwrite(fullfile(tsvFileFolder,outputFileName), output);
+    % raw data path
+    rawDir = '/Users/shahzad/Documents/MATLAB/MotionLocalizer_newtsv_TL1/raw';
 
-      end
-      
-  end
+    % define task names
+    subject = 'sub-001';
+    session = 'ses-001';
+
+    % define the task names
+    taskNames = {'TactileLocalizer'}; % ,'tactileLocalizer2', 'visualLocalizer'};
+
+    % tsv file location
+    rawFuncDir = fullfile(rawDir, subject, session, 'func');
+
+    % remove the suffix
+    if deleteSuffix
+        removeAllDateSuffix(rawDir, subject, session);
+    end
+
+    % Create output file name
+    outputTag = '_touched.tsv';
+
+    for iTask = 1:length(taskNames)
+
+        % create a pattern to look for in the folder
+        FilePattern = ['*', taskNames{iTask}, '*_events.tsv'];
+        % find all the .tsv files
+        tsvFiles = dir(fullfile(rawFuncDir, FilePattern));
+
+        % read, modify and save tsv  in a for loop
+        for iFile = 1:length(tsvFiles)
+
+            tsvFileName = tsvFiles(iFile).name;
+            tsvFileFolder = tsvFiles(iFile).folder;
+
+            % create output file name
+            outputFileName = strrep(tsvFileName, '.tsv', outputTag);
+
+            % read the tsv file
+            output = bids.util.tsvread(fullfile(tsvFileFolder, tsvFileName));
+            %
+            % convert to tsv structure
+            output = convertStruct(output);
+
+            % save as tsv
+            bids.util.tsvwrite(fullfile(tsvFileFolder, outputFileName), output);
+
+        end
+
+    end
 
 end
-
 
 function structure = convertStruct(structure)
     % changes the structure
